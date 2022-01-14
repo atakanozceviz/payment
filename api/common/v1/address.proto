@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package common.v1;
+
+option go_package = "payment/api/common/v1";
+
+message Address {
+  string post_code = 1;
+  string city = 2;
+  string street = 3;
+  string street_number = 4;
+}

@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+package payment.v1;
+
+option go_package = "payment/api/payment/v1";
+
+import "google/type/money.proto";
+import "google/rpc/error_details.proto";
+import "common/v1/address.proto";
+import "validate/validate.proto";
+
+service PaymentService {
+  rpc ClientToken(ClientTokenRequest) returns (ClientTokenResponse);
+  rpc CalculateTransactionFees(CalculateTransactionFeesRequest)
+      returns (CalculateTransactionFeesResponse);
+  rpc ProcessPayment(ProcessPaymentRequest) returns (ProcessPaymentResponse);
+  rpc RefundPayment(RefundPaymentRequest) returns (RefundPaymentResponse);
+  rpc CapturePayment(CapturePaymentRequest) returns (CapturePaymentResponse);
+  rpc GetTransactions(GetTransactionsRequest) returns (GetTransactionsResponse);
+}
+
+message ClientTokenRequest {}
+message ClientTokenResponse {string client_token = 1;}
+
+message PaymentMethod {
+  string type = 1;
+  bool is_enabled = 2;
+}
+message PaymentMethodFee {
+  PaymentMethod payment_method = 1;
+  google.type.Money amount = 2;
+}
+message CalculateTransactionFeesRequest {google.type.Money amount = 1;}
+message CalculateTransactionFeesResponse {
+  repeated PaymentMethodFee payment_method_fees = 1;
+}
+
+message ProcessPaymentRequest {
+  uint32 user_id = 1;
+  string user_key = 2;
+  google.type.Money amount = 3 [(validate.rules).message.required = true];
+  string payment_method_nonce = 4;
+  string payment_method = 5;
+  common.v1.Address address = 6;
+}
+message ProcessPaymentResponse {
+  string id = 1;
+  string payment_transaction_id = 2;
+  string client_secret = 3;
+  string transaction_status = 4;
+}
+
+message RefundPaymentRequest {
+  string transaction_id = 1 [(validate.rules).string.min_len = 5];
+  google.type.Money amount = 2;
+}
+message RefundPaymentResponse {
+  string id = 1;
+  string payment_transaction_id = 2;
+  string transaction_status = 3;
+}
+
+message CapturePaymentRequest {
+  string transaction_id = 1;
+  google.type.Money amount = 2;
+}
+message CapturePaymentResponse {
+  string id = 1;
+  string payment_transaction_id = 2;
+  string transaction_status = 3;
+}
+
+message Transaction {
+  string id = 1;
+  string requested_id = 2;
+  string payment_transaction_id = 3;
+  uint32 user_id = 4;
+  string user_key = 5;
+  google.type.Money amount = 6;
+  common.v1.Address address = 7;
+  string payment_method = 8;
+  string action = 9;
+  string transaction_status = 10;
+}
+
+message GetTransactionsRequest {repeated string ids = 1;}
+message GetTransactionsResponse {repeated Transaction transactions = 1;}
