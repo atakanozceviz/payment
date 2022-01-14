@@ -2,18 +2,20 @@ package main
 
 import (
 	"fmt"
-	"github.com/go-logr/logr"
-	"github.com/go-logr/zerologr"
-	"github.com/rs/zerolog"
 	"net"
-	"os"
 	"payment/internal/server"
+
+	"github.com/go-logr/logr"
+	"github.com/go-logr/zapr"
+	"go.uber.org/zap"
 )
 
 func main() {
-	zl := zerolog.New(os.Stderr)
-	zl = zl.With().Caller().Timestamp().Logger()
-	log := zerologr.New(&zl)
+	zapLog, err := zap.NewDevelopment()
+	if err != nil {
+		panic(fmt.Sprintf("who watches the watchmen (%v)?", err))
+	}
+	log := zapr.NewLogger(zapLog)
 	if err := run(log); err != nil {
 		panic(err)
 	}
@@ -27,7 +29,7 @@ func run(log logr.Logger) error {
 	}
 
 	s := server.NewGRPCServer(log)
-	log.Info("Listening on", "address", listenOn)
+	log.Info("serving gRPC server", "address", listenOn)
 	if err := s.Serve(listener); err != nil {
 		return fmt.Errorf("failed to serve gRPC server: %w", err)
 	}

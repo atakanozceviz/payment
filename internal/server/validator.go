@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -16,9 +17,6 @@ type validatable interface {
 type validationError interface {
 	Field() string
 	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
 }
 
 type multiError interface {
@@ -28,29 +26,32 @@ type multiError interface {
 func validate(req interface{}) error {
 	switch v := req.(type) {
 	case validatable:
-		if err := v.ValidateAll(); err != nil {
-			multiError, ok := err.(multiError)
-			if !ok {
-				return status.Error(codes.InvalidArgument, err.Error())
-			}
+		err := v.ValidateAll()
+		if err == nil {
+			return nil
+		}
+		multiError, ok := err.(multiError)
+		if !ok {
+			return err
+		}
 
-			br := &errdetails.BadRequest{FieldViolations: make([]*errdetails.BadRequest_FieldViolation, 0)}
-			for _, e := range multiError.AllErrors() {
-				ve, ok := e.(validationError)
-				if !ok {
-					return status.Error(codes.InvalidArgument, err.Error())
-				}
-				br.FieldViolations = append(br.FieldViolations, &errdetails.BadRequest_FieldViolation{
-					Field:       ve.Field(),
-					Description: ve.Reason(),
-				})
-			}
-			s, err := status.New(codes.InvalidArgument, "validation failed").WithDetails(br)
-			if err != nil {
+		allErrors := multiError.AllErrors()
+		br := &errdetails.BadRequest{FieldViolations: make([]*errdetails.BadRequest_FieldViolation, len(allErrors))}
+		for i, e := range allErrors {
+			ve, ok := e.(validationError)
+			if !ok {
 				return err
 			}
-			return s.Err()
+			br.FieldViolations[i] = &errdetails.BadRequest_FieldViolation{
+				Field:       ve.Field(),
+				Description: ve.Reason(),
+			}
 		}
+		s, err := status.New(codes.InvalidArgument, "validation failed").WithDetails(br)
+		if err != nil {
+			return err
+		}
+		return s.Err()
 	}
 	return nil
 }

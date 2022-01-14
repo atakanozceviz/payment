@@ -2,8 +2,9 @@ package service
 
 import (
 	"context"
-	"github.com/go-logr/logr"
 	paymentv1 "payment/api/payment/v1"
+
+	"github.com/go-logr/logr"
 )
 
 // paymentServiceServer implements the PaymentService API.
@@ -18,22 +19,32 @@ func NewPaymentServiceServer(log logr.Logger) paymentv1.PaymentServiceServer {
 	}
 }
 
-func (s paymentServiceServer) ClientToken(context.Context, *paymentv1.ClientTokenRequest) (*paymentv1.ClientTokenResponse, error) {
-	response := &paymentv1.ClientTokenResponse{ClientToken: "it works!"}
-	return response, nil
+func (p paymentServiceServer) ClientToken(ctx context.Context, request *paymentv1.ClientTokenRequest) (*paymentv1.ClientTokenResponse, error) {
+	//TODO implement me
+	panic("implement me")
 }
-func (s paymentServiceServer) CalculateTransactionFees(context.Context, *paymentv1.CalculateTransactionFeesRequest) (*paymentv1.CalculateTransactionFeesResponse, error) {
-	return nil, nil
+
+func (p paymentServiceServer) CalculateTransactionFees(ctx context.Context, request *paymentv1.CalculateTransactionFeesRequest) (*paymentv1.CalculateTransactionFeesResponse, error) {
+	//TODO implement me
+	panic("implement me")
 }
-func (s paymentServiceServer) ProcessPayment(context.Context, *paymentv1.ProcessPaymentRequest) (*paymentv1.ProcessPaymentResponse, error) {
-	return nil, nil
+
+func (p paymentServiceServer) ProcessPayment(ctx context.Context, request *paymentv1.ProcessPaymentRequest) (*paymentv1.ProcessPaymentResponse, error) {
+	//TODO implement me
+	panic("implement me")
 }
-func (s paymentServiceServer) RefundPayment(context.Context, *paymentv1.RefundPaymentRequest) (*paymentv1.RefundPaymentResponse, error) {
-	return nil, nil
+
+func (p paymentServiceServer) RefundPayment(ctx context.Context, request *paymentv1.RefundPaymentRequest) (*paymentv1.RefundPaymentResponse, error) {
+	//TODO implement me
+	panic("implement me")
 }
-func (s paymentServiceServer) CapturePayment(context.Context, *paymentv1.CapturePaymentRequest) (*paymentv1.CapturePaymentResponse, error) {
-	return nil, nil
+
+func (p paymentServiceServer) CapturePayment(ctx context.Context, request *paymentv1.CapturePaymentRequest) (*paymentv1.CapturePaymentResponse, error) {
+	//TODO implement me
+	panic("implement me")
 }
-func (s paymentServiceServer) GetTransactions(context.Context, *paymentv1.GetTransactionsRequest) (*paymentv1.GetTransactionsResponse, error) {
-	return nil, nil
+
+func (p paymentServiceServer) GetTransactions(ctx context.Context, request *paymentv1.GetTransactionsRequest) (*paymentv1.GetTransactionsResponse, error) {
+	//TODO implement me
+	panic("implement me")
 }

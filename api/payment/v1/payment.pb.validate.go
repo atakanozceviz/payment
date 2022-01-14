@@ -796,7 +796,16 @@ func (m *ProcessPaymentRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for UserId
+	if m.GetUserId() <= 0 {
+		err := ProcessPaymentRequestValidationError{
+			field:  "UserId",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	// no validation rules for UserKey
 
@@ -842,7 +851,16 @@ func (m *ProcessPaymentRequest) validate(all bool) error {
 
 	// no validation rules for PaymentMethodNonce
 
-	// no validation rules for PaymentMethod
+	if len(m.GetPaymentMethod()) < 1 {
+		err := ProcessPaymentRequestValidationError{
+			field:  "PaymentMethod",
+			reason: "value length must be at least 1 bytes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	if all {
 		switch v := interface{}(m.GetAddress()).(type) {
@@ -1085,10 +1103,10 @@ func (m *RefundPaymentRequest) validate(all bool) error {
 
 	var errors []error
 
-	if utf8.RuneCountInString(m.GetTransactionId()) < 5 {
+	if len(m.GetTransactionId()) != 12 {
 		err := RefundPaymentRequestValidationError{
 			field:  "TransactionId",
-			reason: "value length must be at least 5 runes",
+			reason: "value length must be 12 bytes",
 		}
 		if !all {
 			return err
@@ -1335,7 +1353,16 @@ func (m *CapturePaymentRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for TransactionId
+	if len(m.GetTransactionId()) != 12 {
+		err := CapturePaymentRequestValidationError{
+			field:  "TransactionId",
+			reason: "value length must be 12 bytes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	if all {
 		switch v := interface{}(m.GetAmount()).(type) {
@@ -1748,6 +1775,22 @@ func (m *GetTransactionsRequest) validate(all bool) error {
 	}
 
 	var errors []error
+
+	for idx, item := range m.GetIds() {
+		_, _ = idx, item
+
+		if len(item) != 12 {
+			err := GetTransactionsRequestValidationError{
+				field:  fmt.Sprintf("Ids[%v]", idx),
+				reason: "value length must be 12 bytes",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+	}
 
 	if len(errors) > 0 {
 		return GetTransactionsRequestMultiError(errors)
