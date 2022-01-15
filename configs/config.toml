@@ -8,4 +8,4 @@ addr = "localhost:4243"
 connection_string = "mongodb://localhost:27017"
 
 [logger]
-env = "xx"
+env = "dev"
