@@ -1,35 +1,47 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"net"
+	"payment/internal/config"
+	"payment/internal/logger"
 	"payment/internal/server"
 
 	"github.com/go-logr/logr"
-	"github.com/go-logr/zapr"
-	"go.uber.org/zap"
 )
 
+var (
+	confPath string
+)
+
+func init() {
+	flag.StringVar(&confPath, "conf", "configs/config.toml", "config path, eg: -conf config.yaml")
+}
+
 func main() {
-	zapLog, err := zap.NewDevelopment()
+	flag.Parse()
+	c, err := config.Configure(confPath)
 	if err != nil {
-		panic(fmt.Sprintf("who watches the watchmen (%v)?", err))
+		panic(fmt.Sprintf("error configuring service: %v", err))
 	}
-	log := zapr.NewLogger(zapLog)
-	if err := run(log); err != nil {
+	log, err := logger.New(c.Logger.Env)
+	if err != nil {
+		panic(fmt.Sprintf("error creating logger: %v", err))
+	}
+	if err := run(c, log); err != nil {
 		panic(err)
 	}
 }
 
-func run(log logr.Logger) error {
-	listenOn := "127.0.0.1:4242"
-	listener, err := net.Listen("tcp", listenOn)
+func run(config *config.Config, log logr.Logger) error {
+	listener, err := net.Listen("tcp", config.Server.GRPC.Addr)
 	if err != nil {
-		return fmt.Errorf("failed to listen on %s: %w", listenOn, err)
+		return fmt.Errorf("failed to listen on %s: %w", config.Server.GRPC.Addr, err)
 	}
 
 	s := server.NewGRPCServer(log)
-	log.Info("serving gRPC server", "address", listenOn)
+	log.Info("serving gRPC server", "address", config.Server.GRPC.Addr)
 	if err := s.Serve(listener); err != nil {
 		return fmt.Errorf("failed to serve gRPC server: %w", err)
 	}

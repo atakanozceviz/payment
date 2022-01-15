@@ -1,11 +1,12 @@
 package server
 
 import (
+	paymentv1 "payment/api/payment/v1"
+	"payment/internal/service"
+
 	"github.com/go-logr/logr"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	paymentv1 "payment/api/payment/v1"
-	"payment/internal/service"
 )
 
 // NewGRPCServer new a gRPC server.

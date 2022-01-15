@@ -1,0 +1,11 @@
+[server]
+[server.grpc]
+addr = "localhost:4242"
+[server.http]
+addr = "localhost:4243"
+
+[mongodb]
+connection_string = "mongodb://localhost:27017"
+
+[logger]
+env = "xx"
