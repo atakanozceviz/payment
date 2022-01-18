@@ -21,11 +21,11 @@ func initApp(configLogger config.Logger, configServer config.Server, configData 
 	if err != nil {
 		return nil, nil, err
 	}
-	dataData, cleanup, err := data.NewData(configData, logrLogger)
+	database, cleanup, err := data.NewDatabase(configData, logrLogger)
 	if err != nil {
 		return nil, nil, err
 	}
-	transactionRepo := data.NewTransactionRepo(configData, dataData, logrLogger)
+	transactionRepo := data.NewTransactionRepo(configData, database, logrLogger)
 	paymentServiceServer := service.NewPaymentServiceServer(transactionRepo, logrLogger)
 	grpcServer := server.NewGRPCServer(paymentServiceServer)
 	mux := server.NewHTTPServer()

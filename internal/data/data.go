@@ -15,16 +15,16 @@ import (
 )
 
 var ProviderSet = wire.NewSet(
-	NewData,
+	NewDatabase,
 	NewTransactionRepo,
 	wire.Bind(new(core.TransactionRepo), new(*transactionRepo)),
 )
 
-type Data struct {
+type Database struct {
 	db *mongo.Database
 }
 
-func NewData(c config.Data, log logr.Logger) (*Data, func(), error) {
+func NewDatabase(c config.Data, log logr.Logger) (*Database, func(), error) {
 	// create connection
 	client, err := mongo.NewClient(options.Client().ApplyURI(c.MongoDB.ConnectionString))
 	if err != nil {
@@ -49,5 +49,5 @@ func NewData(c config.Data, log logr.Logger) (*Data, func(), error) {
 		return nil, nil, fmt.Errorf("sending ping command to mongodb: %w", err)
 	}
 
-	return &Data{db: client.Database(c.MongoDB.Database)}, cleanup, nil
+	return &Database{db: client.Database(c.MongoDB.Database)}, cleanup, nil
 }
