@@ -2,6 +2,7 @@ package server
 
 import (
 	paymentv1 "payment/api/payment/v1"
+	"payment/internal/data"
 	"payment/internal/service"
 
 	"github.com/go-logr/logr"
@@ -10,9 +11,9 @@ import (
 )
 
 // NewGRPCServer new a gRPC server.
-func NewGRPCServer(log logr.Logger) *grpc.Server {
+func NewGRPCServer(r data.TransactionRepo, log logr.Logger) *grpc.Server {
 	s := grpc.NewServer(grpc.UnaryInterceptor(UnaryServerInterceptor()))
 	reflection.Register(s)
-	paymentv1.RegisterPaymentServiceServer(s, service.NewPaymentServiceServer(log))
+	paymentv1.RegisterPaymentServiceServer(s, service.NewPaymentServiceServer(r, log))
 	return s
 }

@@ -4,8 +4,11 @@ addr = "localhost:4242"
 [server.http]
 addr = "localhost:4243"
 
-[mongodb]
+[data]
+[data.mongodb]
 connection_string = "mongodb://localhost:27017"
+database = "payment"
+collection = "transactions"
 
 [logger]
 env = "dev"

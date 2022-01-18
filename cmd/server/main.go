@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"payment/internal/config"
+	"payment/internal/data"
 	"payment/internal/logger"
 	"payment/internal/server"
 
@@ -34,14 +35,20 @@ func main() {
 	}
 }
 
-func run(config *config.Config, log logr.Logger) error {
-	listener, err := net.Listen("tcp", config.Server.GRPC.Addr)
+func run(c *config.Config, log logr.Logger) error {
+	listener, err := net.Listen("tcp", c.Server.GRPC.Addr)
 	if err != nil {
-		return fmt.Errorf("failed to listen on %s: %w", config.Server.GRPC.Addr, err)
+		return fmt.Errorf("failed to listen on %s: %w", c.Server.GRPC.Addr, err)
 	}
 
-	s := server.NewGRPCServer(log)
-	log.Info("serving gRPC server", "address", config.Server.GRPC.Addr)
+	d, cleanup, err := data.NewData(c.Data, log)
+	if err != nil {
+		return fmt.Errorf("crating data: %w", err)
+	}
+	defer cleanup()
+	repo := data.NewTransactionRepo(c.Data.MongoDB, d, log)
+	s := server.NewGRPCServer(repo, log)
+	log.Info("serving gRPC server", "address", c.Server.GRPC.Addr)
 	if err := s.Serve(listener); err != nil {
 		return fmt.Errorf("failed to serve gRPC server: %w", err)
 	}

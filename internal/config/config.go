@@ -11,9 +11,9 @@ import (
 )
 
 type Config struct {
-	Server  Server  `koanf:"server"`
-	MongoDB MongoDB `koanf:"mongodb"`
-	Logger  Logger  `koanf:"logger"`
+	Server Server `koanf:"server"`
+	Data   Data   `koanf:"data"`
+	Logger Logger `koanf:"logger"`
 }
 type GRPC struct {
 	Addr string `koanf:"addr"`
@@ -27,6 +27,11 @@ type Server struct {
 }
 type MongoDB struct {
 	ConnectionString string `koanf:"connection_string"`
+	Database         string `koanf:"database"`
+	Collection       string `koanf:"collection"`
+}
+type Data struct {
+	MongoDB MongoDB `koanf:"mongodb"`
 }
 type Logger struct {
 	Env string `koanf:"env"`
