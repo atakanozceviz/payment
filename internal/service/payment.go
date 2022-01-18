@@ -9,73 +9,46 @@ import (
 	"google.golang.org/genproto/googleapis/type/money"
 )
 
-// paymentServiceServer implements the PaymentService API.
-type paymentServiceServer struct {
+// PaymentServiceServer implements the PaymentService API.
+type PaymentServiceServer struct {
 	paymentv1.UnimplementedPaymentServiceServer
 	r   data.TransactionRepo
 	log logr.Logger
 }
 
 func NewPaymentServiceServer(r data.TransactionRepo, log logr.Logger) paymentv1.PaymentServiceServer {
-	return &paymentServiceServer{
+	return &PaymentServiceServer{
 		r:   r,
 		log: log,
 	}
 }
 
-func (p paymentServiceServer) ClientToken(ctx context.Context, request *paymentv1.ClientTokenRequest) (*paymentv1.ClientTokenResponse, error) {
+func (p PaymentServiceServer) ClientToken(ctx context.Context, request *paymentv1.ClientTokenRequest) (*paymentv1.ClientTokenResponse, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (p paymentServiceServer) CalculateTransactionFees(ctx context.Context, request *paymentv1.CalculateTransactionFeesRequest) (*paymentv1.CalculateTransactionFeesResponse, error) {
+func (p PaymentServiceServer) CalculateTransactionFees(ctx context.Context, request *paymentv1.CalculateTransactionFeesRequest) (*paymentv1.CalculateTransactionFeesResponse, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (p paymentServiceServer) ProcessPayment(ctx context.Context, request *paymentv1.ProcessPaymentRequest) (*paymentv1.ProcessPaymentResponse, error) {
-	paymentMethodType := data.PaymentMethodType(request.PaymentMethod)
-	if err := paymentMethodType.IsValid(); err != nil {
-		return nil, err
-	}
-
-	t := &data.Transaction{
-		UserId:  request.UserId,
-		UserKey: request.UserKey,
-		Amount:  moneyToCents(request.Amount),
-		Address: data.Address{
-			City:         request.Address.City,
-			Street:       request.Address.Street,
-			StreetNumber: request.Address.StreetNumber,
-			PostCode:     request.Address.PostCode,
-		},
-		PaymentMethodType: paymentMethodType,
-		TransactionAction: data.ProcessPayment,
-		TransactionStatus: data.Processing,
-	}
-	err := p.r.Create(ctx, t)
-	if err != nil {
-		return nil, err
-	}
-	return &paymentv1.ProcessPaymentResponse{
-		Id:                   t.ID.Hex(),
-		PaymentTransactionId: t.PaymentTransactionID,
-		ClientSecret:         "hihi",
-		TransactionStatus:    string(t.TransactionStatus),
-	}, nil
-}
-
-func (p paymentServiceServer) RefundPayment(ctx context.Context, request *paymentv1.RefundPaymentRequest) (*paymentv1.RefundPaymentResponse, error) {
+func (p PaymentServiceServer) ProcessPayment(ctx context.Context, request *paymentv1.ProcessPaymentRequest) (*paymentv1.ProcessPaymentResponse, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (p paymentServiceServer) CapturePayment(ctx context.Context, request *paymentv1.CapturePaymentRequest) (*paymentv1.CapturePaymentResponse, error) {
+func (p PaymentServiceServer) RefundPayment(ctx context.Context, request *paymentv1.RefundPaymentRequest) (*paymentv1.RefundPaymentResponse, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (p paymentServiceServer) GetTransactions(ctx context.Context, request *paymentv1.GetTransactionsRequest) (*paymentv1.GetTransactionsResponse, error) {
+func (p PaymentServiceServer) CapturePayment(ctx context.Context, request *paymentv1.CapturePaymentRequest) (*paymentv1.CapturePaymentResponse, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (p PaymentServiceServer) GetTransactions(ctx context.Context, request *paymentv1.GetTransactionsRequest) (*paymentv1.GetTransactionsResponse, error) {
 	//TODO implement me
 	panic("implement me")
 }

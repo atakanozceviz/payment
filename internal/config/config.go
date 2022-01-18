@@ -42,21 +42,22 @@ var (
 	parser = toml.Parser()
 )
 
-func Configure(p string) (*Config, error) {
+func Configure(p string) (Config, error) {
+	c := Config{}
+
 	if err := k.Load(file.Provider(p), parser); err != nil {
-		return nil, fmt.Errorf("loading config: %w", err)
+		return c, fmt.Errorf("loading config: %w", err)
 	}
 	if err := k.Load(env.Provider("PAYMENT_", ".", func(s string) string {
 		return strings.Replace(strings.ToLower(
-			strings.TrimPrefix(s, "PAYMENT_")), "_", ".", -1)
+			strings.TrimPrefix(s, "PAYMENT_")), "__", ".", -1)
 	}), nil); err != nil {
-		return nil, fmt.Errorf("loading config: %w", err)
+		return c, fmt.Errorf("loading config: %w", err)
 	}
 
-	c := new(Config)
-	err := k.Unmarshal("", c)
+	err := k.Unmarshal("", &c)
 	if err != nil {
-		return nil, fmt.Errorf("unmarshalling config: %w", err)
+		return c, fmt.Errorf("unmarshalling config: %w", err)
 	}
 	return c, nil
 }

@@ -7,10 +7,13 @@ import (
 	"time"
 
 	"github.com/go-logr/logr"
+	"github.com/google/wire"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
+
+var ProviderSet = wire.NewSet(NewData, NewTransactionRepo)
 
 type Data struct {
 	db *mongo.Database
@@ -38,7 +41,7 @@ func NewData(c config.Data, log logr.Logger) (*Data, func(), error) {
 
 	err = client.Ping(ctx, readpref.Primary())
 	if err != nil {
-		return nil, nil, fmt.Errorf("sending ping command: %w", err)
+		return nil, nil, fmt.Errorf("sending ping command to mongodb: %w", err)
 	}
 
 	return &Data{db: client.Database(c.MongoDB.Database)}, cleanup, nil

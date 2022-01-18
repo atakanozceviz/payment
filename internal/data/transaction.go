@@ -36,8 +36,8 @@ type transactionRepo struct {
 	c   *mongo.Collection
 }
 
-func NewTransactionRepo(c config.MongoDB, d *Data, log logr.Logger) TransactionRepo {
-	collection := d.db.Collection(c.Collection)
+func NewTransactionRepo(c config.Data, d *Data, log logr.Logger) TransactionRepo {
+	collection := d.db.Collection(c.MongoDB.Collection)
 	return &transactionRepo{
 		log: log,
 		c:   collection,

@@ -2,22 +2,26 @@ package logger
 
 import (
 	"fmt"
+	"payment/internal/config"
 	"strings"
 
 	"github.com/go-logr/logr"
 	"github.com/go-logr/zapr"
+	"github.com/google/wire"
 	"go.uber.org/zap"
 )
+
+var ProviderSet = wire.NewSet(New)
 
 var (
 	dev  = "dev"
 	prod = "prod"
 )
 
-func New(env string) (log logr.Logger, err error) {
+func New(c config.Logger) (log logr.Logger, err error) {
 	var zapLog *zap.Logger
 
-	switch strings.ToLower(env) {
+	switch strings.ToLower(c.Env) {
 	case dev:
 		zapLog, err = zap.NewDevelopment()
 		if err != nil {
@@ -31,7 +35,7 @@ func New(env string) (log logr.Logger, err error) {
 			return
 		}
 	default:
-		err = fmt.Errorf("invalid env '%s', must be one of '%s' or '%s'", env, dev, prod)
+		err = fmt.Errorf("invalid env '%s', must be one of '%s' or '%s'", c.Env, dev, prod)
 		return
 	}
 	log = zapr.NewLogger(zapLog)
