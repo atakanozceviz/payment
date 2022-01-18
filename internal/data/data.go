@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"payment/internal/config"
+	"payment/internal/core"
 	"time"
 
 	"github.com/go-logr/logr"
@@ -16,7 +17,7 @@ import (
 var ProviderSet = wire.NewSet(
 	NewData,
 	NewTransactionRepo,
-	wire.Bind(new(TransactionRepo), new(*transactionRepo)),
+	wire.Bind(new(core.TransactionRepo), new(*transactionRepo)),
 )
 
 type Data struct {

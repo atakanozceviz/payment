@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	paymentv1 "payment/api/payment/v1"
-	"payment/internal/data"
+	"payment/internal/core"
 
 	"github.com/go-logr/logr"
 	"google.golang.org/genproto/googleapis/type/money"
@@ -12,11 +12,11 @@ import (
 // PaymentServiceServer implements the PaymentService API.
 type PaymentServiceServer struct {
 	paymentv1.UnimplementedPaymentServiceServer
-	r   data.TransactionRepo
+	r   core.TransactionRepo
 	log logr.Logger
 }
 
-func NewPaymentServiceServer(r data.TransactionRepo, log logr.Logger) *PaymentServiceServer {
+func NewPaymentServiceServer(r core.TransactionRepo, log logr.Logger) *PaymentServiceServer {
 	return &PaymentServiceServer{
 		r:   r,
 		log: log,
