@@ -13,7 +13,11 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-var ProviderSet = wire.NewSet(NewData, NewTransactionRepo)
+var ProviderSet = wire.NewSet(
+	NewData,
+	NewTransactionRepo,
+	wire.Bind(new(TransactionRepo), new(*transactionRepo)),
+)
 
 type Data struct {
 	db *mongo.Database

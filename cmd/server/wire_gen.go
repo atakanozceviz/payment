@@ -28,7 +28,8 @@ func initApp(configLogger config.Logger, configServer config.Server, configData 
 	transactionRepo := data.NewTransactionRepo(configData, dataData, logrLogger)
 	paymentServiceServer := service.NewPaymentServiceServer(transactionRepo, logrLogger)
 	grpcServer := server.NewGRPCServer(paymentServiceServer)
-	mainApp := newApp(grpcServer, configServer, logrLogger)
+	mux := server.NewHTTPServer()
+	mainApp := newApp(grpcServer, mux, configServer, logrLogger)
 	return mainApp, func() {
 		cleanup()
 	}, nil

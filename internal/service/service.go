@@ -1,5 +1,12 @@
 package service
 
-import "github.com/google/wire"
+import (
+	paymentv1 "payment/api/payment/v1"
 
-var ProviderSet = wire.NewSet(NewPaymentServiceServer)
+	"github.com/google/wire"
+)
+
+var ProviderSet = wire.NewSet(
+	NewPaymentServiceServer,
+	wire.Bind(new(paymentv1.PaymentServiceServer), new(*PaymentServiceServer)),
+)

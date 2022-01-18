@@ -7,7 +7,6 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-// NewGRPCServer new a gRPC server.
 func NewGRPCServer(payment paymentv1.PaymentServiceServer) *grpc.Server {
 	s := grpc.NewServer(grpc.UnaryInterceptor(UnaryServerInterceptor()))
 	reflection.Register(s)

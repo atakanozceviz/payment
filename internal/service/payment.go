@@ -16,7 +16,7 @@ type PaymentServiceServer struct {
 	log logr.Logger
 }
 
-func NewPaymentServiceServer(r data.TransactionRepo, log logr.Logger) paymentv1.PaymentServiceServer {
+func NewPaymentServiceServer(r data.TransactionRepo, log logr.Logger) *PaymentServiceServer {
 	return &PaymentServiceServer{
 		r:   r,
 		log: log,
