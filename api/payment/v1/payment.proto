@@ -40,9 +40,21 @@ message ProcessPaymentRequest {
   string user_key = 2;
   google.type.Money amount = 3 [ (validate.rules).message.required = true ];
   string payment_method_nonce = 4;
-  string payment_method = 5 [ (validate.rules).string.min_bytes = 1 ];
+  string payment_method = 5 [ (validate.rules).string = {
+    in: [
+      "GooglePay",
+      "ApplePay",
+      "Mastercard",
+      "Visa",
+      "AmericanExpress",
+      "PayPal",
+      "BankTransfer",
+      "Cash"
+    ]
+  } ];
   common.v1.Address address = 6;
 }
+
 message ProcessPaymentResponse {
   string id = 1;
   string payment_transaction_id = 2;

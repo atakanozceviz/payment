@@ -851,10 +851,10 @@ func (m *ProcessPaymentRequest) validate(all bool) error {
 
 	// no validation rules for PaymentMethodNonce
 
-	if len(m.GetPaymentMethod()) < 1 {
+	if _, ok := _ProcessPaymentRequest_PaymentMethod_InLookup[m.GetPaymentMethod()]; !ok {
 		err := ProcessPaymentRequestValidationError{
 			field:  "PaymentMethod",
-			reason: "value length must be at least 1 bytes",
+			reason: "value must be in list [GooglePay ApplePay Mastercard Visa AmericanExpress PayPal BankTransfer Cash]",
 		}
 		if !all {
 			return err
@@ -970,6 +970,17 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = ProcessPaymentRequestValidationError{}
+
+var _ProcessPaymentRequest_PaymentMethod_InLookup = map[string]struct{}{
+	"GooglePay":       {},
+	"ApplePay":        {},
+	"Mastercard":      {},
+	"Visa":            {},
+	"AmericanExpress": {},
+	"PayPal":          {},
+	"BankTransfer":    {},
+	"Cash":            {},
+}
 
 // Validate checks the field values on ProcessPaymentResponse with the rules
 // defined in the proto definition for this message. If any rules are
