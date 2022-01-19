@@ -52,6 +52,10 @@ func (a Server) ServeGRPC() error {
 
 func (a Server) Shutdown() {
 	a.log.Info("server shutdown")
-	a.g.GracefulStop()
-	_ = a.h.Shutdown(context.Background())
+	if a.grpcAddr != "" {
+		a.g.GracefulStop()
+	}
+	if a.httpAddr != "" {
+		_ = a.h.Shutdown(context.Background())
+	}
 }
