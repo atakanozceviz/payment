@@ -44,13 +44,14 @@ func (a Server) ServeGRPC() error {
 	}
 	listener, err := net.Listen("tcp", a.grpcAddr)
 	if err != nil {
-		return fmt.Errorf("failed to listen on %s: %w", listener.Addr(), err)
+		return fmt.Errorf("failed to listen on %s: %w", a.grpcAddr, err)
 	}
 	a.log.Info("serving gRPC server", "address", a.grpcAddr)
 	return a.g.Serve(listener)
 }
 
 func (a Server) Shutdown() {
+	a.log.Info("server shutdown")
 	a.g.GracefulStop()
 	_ = a.h.Shutdown(context.Background())
 }

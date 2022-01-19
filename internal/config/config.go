@@ -51,7 +51,9 @@ type Logger struct {
 }
 
 var (
-	k      = koanf.New(".")
+	prefix = "PAYMENT__"
+	delim  = "."
+	k      = koanf.New(delim)
 	parser = toml.Parser()
 )
 
@@ -62,10 +64,7 @@ func Configure(p string) (Config, error) {
 			return c, fmt.Errorf("loading config: %w", err)
 		}
 	}
-	if err := k.Load(env.Provider("PAYMENT_", ".", func(s string) string {
-		return strings.Replace(strings.ToLower(
-			strings.TrimPrefix(s, "PAYMENT_")), "__", ".", -1)
-	}), nil); err != nil {
+	if err := k.Load(env.Provider(prefix, delim, cb), nil); err != nil {
 		return c, fmt.Errorf("loading config: %w", err)
 	}
 
@@ -74,4 +73,11 @@ func Configure(p string) (Config, error) {
 		return c, fmt.Errorf("unmarshalling config: %w", err)
 	}
 	return c, nil
+}
+
+func cb(s string) string {
+	s = strings.TrimPrefix(s, prefix)
+	s = strings.ToLower(s)
+	s = strings.Replace(s, "__", delim, -1)
+	return s
 }
