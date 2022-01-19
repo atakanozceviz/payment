@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/parsers/toml"
@@ -29,10 +30,12 @@ type Config struct {
 	Logger Logger `koanf:"logger"`
 }
 type GRPC struct {
-	Addr string `koanf:"addr"`
+	Addr    string        `koanf:"addr"`
+	Timeout time.Duration `koanf:"timeout"`
 }
 type HTTP struct {
-	Addr string `koanf:"addr"`
+	Addr    string        `koanf:"addr"`
+	Timeout time.Duration `koanf:"timeout"`
 }
 type Server struct {
 	GRPC GRPC `koanf:"grpc"`

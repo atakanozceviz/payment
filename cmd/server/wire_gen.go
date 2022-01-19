@@ -27,7 +27,7 @@ func initApp(configLogger config.Logger, configServer config.Server, configData 
 	}
 	transactionRepo := data.NewTransactionRepo(configData, database, logrLogger)
 	paymentServiceServer := service.NewPaymentServiceServer(transactionRepo, logrLogger)
-	grpcServer := server.NewGRPCServer(paymentServiceServer)
+	grpcServer := server.NewGRPCServer(configServer, paymentServiceServer)
 	httpServer := server.NewHTTPServer(configServer)
 	serverServer := server.New(grpcServer, httpServer, configServer, logrLogger)
 	return serverServer, func() {

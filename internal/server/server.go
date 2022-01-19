@@ -31,7 +31,7 @@ func New(g *grpc.Server, h *http.Server, c config.Server, log logr.Logger) *Serv
 
 func (a Server) ServeHTTP() error {
 	if a.httpAddr == "" {
-		a.log.Info("HTTP server not serving!: empty address")
+		a.log.Info("HTTP server not serving!: no address given")
 		return nil
 	}
 	a.log.Info("serving HTTP server", "address", a.httpAddr)
@@ -39,7 +39,7 @@ func (a Server) ServeHTTP() error {
 }
 func (a Server) ServeGRPC() error {
 	if a.grpcAddr == "" {
-		a.log.Info("gRPC server not serving!: empty address")
+		a.log.Info("gRPC server not serving!: no address given")
 		return nil
 	}
 	listener, err := net.Listen("tcp", a.grpcAddr)

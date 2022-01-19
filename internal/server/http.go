@@ -3,7 +3,6 @@ package server
 import (
 	"net/http"
 	"payment/internal/config"
-	"time"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -15,8 +14,8 @@ func NewHTTPServer(c config.Server) *http.Server {
 	httpServer := &http.Server{
 		Addr:         c.HTTP.Addr,
 		Handler:      r,
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 10 * time.Second,
+		ReadTimeout:  c.HTTP.Timeout,
+		WriteTimeout: c.HTTP.Timeout,
 	}
 	return httpServer
 }

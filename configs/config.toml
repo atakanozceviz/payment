@@ -1,8 +1,11 @@
 [server]
 [server.grpc]
 addr = "localhost:4242"
+timeout = "10s"
+
 [server.http]
 addr = "localhost:4243"
+timeout = "10s"
 
 [data]
 [data.mongodb]
