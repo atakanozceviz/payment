@@ -16,7 +16,7 @@ import (
 
 // Injectors from wire.go:
 
-func initApp(configLogger config.Logger, configServer config.Server, configData config.Data) (*app, func(), error) {
+func initApp(configLogger config.Logger, configServer config.Server, configData config.Data) (*server.Server, func(), error) {
 	logrLogger, err := logger.New(configLogger)
 	if err != nil {
 		return nil, nil, err
@@ -28,9 +28,9 @@ func initApp(configLogger config.Logger, configServer config.Server, configData 
 	transactionRepo := data.NewTransactionRepo(configData, database, logrLogger)
 	paymentServiceServer := service.NewPaymentServiceServer(transactionRepo, logrLogger)
 	grpcServer := server.NewGRPCServer(paymentServiceServer)
-	mux := server.NewHTTPServer()
-	mainApp := newApp(grpcServer, mux, configServer, logrLogger)
-	return mainApp, func() {
+	httpServer := server.NewHTTPServer(configServer)
+	serverServer := server.New(grpcServer, httpServer, configServer, logrLogger)
+	return serverServer, func() {
 		cleanup()
 	}, nil
 }

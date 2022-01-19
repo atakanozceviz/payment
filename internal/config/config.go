@@ -10,6 +10,19 @@ import (
 	"github.com/knadh/koanf/providers/file"
 )
 
+var DefaultConfig = Config{
+	Data: Data{
+		MongoDB: MongoDB{
+			ConnectionString: "mongodb://localhost:27017",
+			Database:         "payment",
+			Collection:       "transactions",
+		},
+	},
+	Logger: Logger{
+		Env: "dev",
+	},
+}
+
 type Config struct {
 	Server Server `koanf:"server"`
 	Data   Data   `koanf:"data"`
@@ -43,10 +56,11 @@ var (
 )
 
 func Configure(p string) (Config, error) {
-	c := Config{}
-
-	if err := k.Load(file.Provider(p), parser); err != nil {
-		return c, fmt.Errorf("loading config: %w", err)
+	c := DefaultConfig
+	if p != "" {
+		if err := k.Load(file.Provider(p), parser); err != nil {
+			return c, fmt.Errorf("loading config: %w", err)
+		}
 	}
 	if err := k.Load(env.Provider("PAYMENT_", ".", func(s string) string {
 		return strings.Replace(strings.ToLower(

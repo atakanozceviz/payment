@@ -14,6 +14,6 @@ import (
 	"github.com/google/wire"
 )
 
-func initApp(config.Logger, config.Server, config.Data) (*app, func(), error) {
-	panic(wire.Build(server.ProviderSet, data.ProviderSet, service.ProviderSet, logger.ProviderSet, newApp))
+func initApp(config.Logger, config.Server, config.Data) (*server.Server, func(), error) {
+	panic(wire.Build(server.ProviderSet, data.ProviderSet, service.ProviderSet, logger.ProviderSet, server.New))
 }

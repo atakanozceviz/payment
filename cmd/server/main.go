@@ -3,7 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
+	"os/signal"
 	"payment/internal/config"
+	"syscall"
 )
 
 var (
@@ -23,10 +26,29 @@ func main() {
 
 	app, cleanup, err := initApp(c.Logger, c.Server, c.Data)
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("error initializing app: %v", err))
 	}
-	defer cleanup()
-	if err := app.Serve(); err != nil {
+	defer func() {
+		cleanup()
+		app.Shutdown()
+	}()
+	errChan := make(chan error)
+	go func() {
+		if err := app.ServeGRPC(); err != nil {
+			errChan <- fmt.Errorf("serving gRPC: %w", err)
+		}
+	}()
+	go func() {
+		if err := app.ServeHTTP(); err != nil {
+			errChan <- fmt.Errorf("serving HTTP: %w", err)
+		}
+	}()
+
+	stopChan := make(chan os.Signal)
+	signal.Notify(stopChan, syscall.SIGTERM, syscall.SIGINT)
+	select {
+	case err := <-errChan:
 		panic(err)
+	case <-stopChan:
 	}
 }

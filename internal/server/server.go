@@ -1,14 +1,56 @@
 package server
 
 import (
+	"context"
+	"fmt"
+	"net"
 	"net/http"
+	"payment/internal/config"
 
-	"github.com/go-chi/chi/v5"
+	"github.com/go-logr/logr"
 	"github.com/google/wire"
+	"google.golang.org/grpc"
 )
 
 var ProviderSet = wire.NewSet(
 	NewGRPCServer,
 	NewHTTPServer,
-	wire.Bind(new(http.Handler), new(*chi.Mux)),
 )
+
+type Server struct {
+	g        *grpc.Server
+	h        *http.Server
+	grpcAddr string
+	httpAddr string
+	log      logr.Logger
+}
+
+func New(g *grpc.Server, h *http.Server, c config.Server, log logr.Logger) *Server {
+	return &Server{g: g, h: h, grpcAddr: c.GRPC.Addr, httpAddr: c.HTTP.Addr, log: log}
+}
+
+func (a Server) ServeHTTP() error {
+	if a.httpAddr == "" {
+		a.log.Info("HTTP server not serving!: empty address")
+		return nil
+	}
+	a.log.Info("serving HTTP server", "address", a.httpAddr)
+	return a.h.ListenAndServe()
+}
+func (a Server) ServeGRPC() error {
+	if a.grpcAddr == "" {
+		a.log.Info("gRPC server not serving!: empty address")
+		return nil
+	}
+	listener, err := net.Listen("tcp", a.grpcAddr)
+	if err != nil {
+		return fmt.Errorf("failed to listen on %s: %w", listener.Addr(), err)
+	}
+	a.log.Info("serving gRPC server", "address", a.grpcAddr)
+	return a.g.Serve(listener)
+}
+
+func (a Server) Shutdown() {
+	a.g.GracefulStop()
+	_ = a.h.Shutdown(context.Background())
+}
