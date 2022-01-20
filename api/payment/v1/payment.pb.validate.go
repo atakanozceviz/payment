@@ -1114,10 +1114,10 @@ func (m *RefundPaymentRequest) validate(all bool) error {
 
 	var errors []error
 
-	if len(m.GetTransactionId()) != 12 {
+	if len(m.GetTransactionId()) != 24 {
 		err := RefundPaymentRequestValidationError{
 			field:  "TransactionId",
-			reason: "value length must be 12 bytes",
+			reason: "value length must be 24 bytes",
 		}
 		if !all {
 			return err
@@ -1364,10 +1364,10 @@ func (m *CapturePaymentRequest) validate(all bool) error {
 
 	var errors []error
 
-	if len(m.GetTransactionId()) != 12 {
+	if len(m.GetTransactionId()) != 24 {
 		err := CapturePaymentRequestValidationError{
 			field:  "TransactionId",
-			reason: "value length must be 12 bytes",
+			reason: "value length must be 24 bytes",
 		}
 		if !all {
 			return err
@@ -1790,10 +1790,10 @@ func (m *GetTransactionsRequest) validate(all bool) error {
 	for idx, item := range m.GetIds() {
 		_, _ = idx, item
 
-		if len(item) != 12 {
+		if len(item) != 24 {
 			err := GetTransactionsRequestValidationError{
 				field:  fmt.Sprintf("Ids[%v]", idx),
-				reason: "value length must be 12 bytes",
+				reason: "value length must be 24 bytes",
 			}
 			if !all {
 				return err

@@ -63,7 +63,7 @@ message ProcessPaymentResponse {
 }
 
 message RefundPaymentRequest {
-  string transaction_id = 1 [ (validate.rules).string.len_bytes = 12 ];
+  string transaction_id = 1 [ (validate.rules).string.len_bytes = 24 ];
   google.type.Money amount = 2;
 }
 message RefundPaymentResponse {
@@ -73,7 +73,7 @@ message RefundPaymentResponse {
 }
 
 message CapturePaymentRequest {
-  string transaction_id = 1 [ (validate.rules).string.len_bytes = 12 ];
+  string transaction_id = 1 [ (validate.rules).string.len_bytes = 24 ];
   google.type.Money amount = 2;
 }
 message CapturePaymentResponse {
@@ -97,6 +97,6 @@ message Transaction {
 
 message GetTransactionsRequest {
   repeated string ids = 1
-      [ (validate.rules).repeated .items.string.len_bytes = 12 ];
+      [ (validate.rules).repeated.items.string.len_bytes = 24 ];
 }
 message GetTransactionsResponse { repeated Transaction transactions = 1; }

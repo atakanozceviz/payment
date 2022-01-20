@@ -23,5 +23,7 @@ type Address struct {
 }
 
 type TransactionRepo interface {
-	Create(context.Context, *Transaction) error
+	Create(context.Context, *Transaction) (*Transaction, error)
+	Get(context.Context, primitive.ObjectID) (*Transaction, error)
+	GetByPaymentTransactionID(context.Context, string) (*Transaction, error)
 }
