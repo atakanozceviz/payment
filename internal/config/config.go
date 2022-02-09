@@ -60,7 +60,7 @@ var (
 	parser = toml.Parser()
 )
 
-func Configure(p string) (Config, error) {
+func New(p string) (Config, error) {
 	c := DefaultConfig
 	if p != "" {
 		if err := k.Load(file.Provider(p), parser); err != nil {

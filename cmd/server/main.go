@@ -19,7 +19,7 @@ func init() {
 
 func main() {
 	flag.Parse()
-	c, err := config.Configure(confPath)
+	c, err := config.New(confPath)
 	if err != nil {
 		panic(fmt.Sprintf("error configuring service: %v", err))
 	}
@@ -44,7 +44,7 @@ func main() {
 		}
 	}()
 
-	stopChan := make(chan os.Signal)
+	stopChan := make(chan os.Signal, 1)
 	signal.Notify(stopChan, syscall.SIGTERM, syscall.SIGINT)
 	select {
 	case err := <-errChan:
