@@ -29,24 +29,24 @@ func NewTransactionRepo(c config.Data, d *Database, log logr.Logger) *transactio
 func (r transactionRepo) Create(ctx context.Context, t *core.Transaction) (*core.Transaction, error) {
 	m := transactionDBModel{
 		ID:                   primitive.NewObjectID(),
-		PaymentTransactionID: t.PaymentTransactionID,
-		Amount:               t.Amount,
+		PaymentTransactionID: t.PaymentTransactionID(),
+		Amount:               t.Amount(),
 		Address: addressDBModel{
-			City:         t.Address.City,
-			Street:       t.Address.Street,
-			StreetNumber: t.Address.StreetNumber,
-			PostCode:     t.Address.PostCode,
+			City:         t.Address().City(),
+			Street:       t.Address().Street(),
+			StreetNumber: t.Address().StreetNumber(),
+			PostCode:     t.Address().PostCode(),
 		},
-		PaymentMethodType: t.PaymentMethodType.String(),
-		Action:            t.Action.String(),
-		Status:            t.Status.String(),
-		Metadata:          t.Metadata,
+		PaymentMethodType: t.PaymentMethodType().String(),
+		Action:            t.Action().String(),
+		Status:            t.Status().String(),
+		Metadata:          t.Metadata(),
 	}
 	id, err := r.c.InsertOne(ctx, m)
 	if err != nil {
 		return nil, fmt.Errorf("creating transaction: %w", err)
 	}
-	t.ID = core.ID(id.InsertedID.(primitive.ObjectID).Hex())
+	t.SetId(core.ID(id.InsertedID.(primitive.ObjectID).Hex()))
 	return t, nil
 }
 func (r transactionRepo) Get(ctx context.Context, id core.ID) (*core.Transaction, error) {
