@@ -6,6 +6,10 @@ type TransactionStatus struct {
 	slug string
 }
 
+func (t TransactionStatus) String() string {
+	return t.slug
+}
+
 var ErrInvalidTransactionStatus = errors.New("invalid transaction status")
 
 var (

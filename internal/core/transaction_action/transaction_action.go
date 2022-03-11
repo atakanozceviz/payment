@@ -6,6 +6,10 @@ type TransactionAction struct {
 	slug string
 }
 
+func (t TransactionAction) String() string {
+	return t.slug
+}
+
 var ErrInvalidTransactionAction = errors.New("invalid transaction action")
 
 var (

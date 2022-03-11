@@ -27,16 +27,35 @@ func NewTransactionRepo(c config.Data, d *Database, log logr.Logger) *transactio
 }
 
 func (r transactionRepo) Create(ctx context.Context, t *core.Transaction) (*core.Transaction, error) {
-	id, err := r.c.InsertOne(ctx, t)
+	m := transactionDBModel{
+		ID:                   primitive.NewObjectID(),
+		PaymentTransactionID: t.PaymentTransactionID,
+		Amount:               t.Amount,
+		Address: addressDBModel{
+			City:         t.Address.City,
+			Street:       t.Address.Street,
+			StreetNumber: t.Address.StreetNumber,
+			PostCode:     t.Address.PostCode,
+		},
+		PaymentMethodType: t.PaymentMethodType.String(),
+		Action:            t.Action.String(),
+		Status:            t.Status.String(),
+		Metadata:          t.Metadata,
+	}
+	id, err := r.c.InsertOne(ctx, m)
 	if err != nil {
 		return nil, fmt.Errorf("creating transaction: %w", err)
 	}
-	t.ID = id.InsertedID.(primitive.ObjectID)
+	t.ID = core.ID(id.InsertedID.(primitive.ObjectID).Hex())
 	return t, nil
 }
-func (r transactionRepo) Get(ctx context.Context, id primitive.ObjectID) (*core.Transaction, error) {
+func (r transactionRepo) Get(ctx context.Context, id core.ID) (*core.Transaction, error) {
 	t := new(core.Transaction)
-	if err := r.c.FindOne(ctx, bson.M{"_id": id}).Decode(t); err != nil {
+	objectID, err := primitive.ObjectIDFromHex(string(id))
+	if err != nil {
+		return nil, fmt.Errorf("getting transaction by id: %w", err)
+	}
+	if err := r.c.FindOne(ctx, bson.M{"_id": objectID}).Decode(t); err != nil {
 		return nil, fmt.Errorf("getting transaction by id: %w", err)
 	}
 	return t, nil
